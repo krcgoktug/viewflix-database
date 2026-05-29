@@ -1,0 +1,205 @@
+// ============================================================
+//  STREAMFLIX - Dizi & Film İzleme Platformu Veritabanı
+//  ER Şeması (dbdiagram.io için DBML formatı)
+//  Kullanım: https://dbdiagram.io -> bu dosyanın içeriğini yapıştır
+// ============================================================
+
+Table countries {
+  country_id   int [pk, increment]
+  country_name varchar(60) [not null, unique]
+  country_code char(2)     [not null, unique]
+}
+
+Table languages {
+  language_id   int [pk, increment]
+  language_name varchar(40) [not null, unique]
+  language_code char(2)     [not null, unique]
+}
+
+Table users {
+  user_id        int [pk, increment]
+  email          varchar(120) [not null, unique]
+  password_hash  varchar(255) [not null]
+  first_name     varchar(50)  [not null]
+  last_name      varchar(50)  [not null]
+  birth_date     date
+  country_id     int [ref: > countries.country_id]
+  phone          varchar(20)
+  created_at     datetime [not null]
+  account_status varchar(15) [not null, note: "Active / Suspended / Cancelled"]
+}
+
+Table profiles {
+  profile_id           int [pk, increment]
+  user_id              int [not null, ref: > users.user_id]
+  profile_name         varchar(40) [not null]
+  is_kids              boolean [not null, default: false]
+  preferred_language_id int [ref: > languages.language_id]
+  created_at           datetime [not null]
+}
+
+Table subscription_plans {
+  plan_id        int [pk, increment]
+  plan_name      varchar(30) [not null, unique]
+  monthly_price  decimal(6,2) [not null]
+  max_resolution varchar(10) [not null, note: "720p / 1080p / 4K"]
+  max_screens    int [not null]
+  description    varchar(200)
+}
+
+Table subscriptions {
+  subscription_id int [pk, increment]
+  user_id         int [not null, ref: > users.user_id]
+  plan_id         int [not null, ref: > subscription_plans.plan_id]
+  start_date      date [not null]
+  end_date        date
+  status          varchar(15) [not null, note: "Active / Expired / Cancelled"]
+  auto_renew      boolean [not null, default: true]
+}
+
+Table payments {
+  payment_id      int [pk, increment]
+  subscription_id int [not null, ref: > subscriptions.subscription_id]
+  amount          decimal(6,2) [not null]
+  payment_date    datetime [not null]
+  payment_method  varchar(20) [not null, note: "CreditCard / PayPal / GiftCard"]
+  payment_status  varchar(15) [not null, note: "Success / Failed / Refunded"]
+}
+
+Table content {
+  content_id           int [pk, increment]
+  title                varchar(150) [not null]
+  content_type         varchar(10) [not null, note: "Movie / Series"]
+  release_year         int
+  description          text
+  maturity_rating      varchar(6) [note: "G / PG / PG-13 / R / TV-14 / TV-MA"]
+  original_language_id int [ref: > languages.language_id]
+  imdb_rating          decimal(3,1)
+  added_date           date [not null]
+}
+
+Table movies {
+  content_id       int [pk, ref: - content.content_id]
+  duration_minutes int [not null]
+}
+
+Table series {
+  content_id    int [pk, ref: - content.content_id]
+  series_status varchar(10) [not null, note: "Ongoing / Ended"]
+}
+
+Table seasons {
+  season_id     int [pk, increment]
+  content_id    int [not null, ref: > series.content_id]
+  season_number int [not null]
+  release_year  int
+
+  indexes {
+    (content_id, season_number) [unique]
+  }
+}
+
+Table episodes {
+  episode_id       int [pk, increment]
+  season_id        int [not null, ref: > seasons.season_id]
+  episode_number   int [not null]
+  title            varchar(150) [not null]
+  duration_minutes int [not null]
+
+  indexes {
+    (season_id, episode_number) [unique]
+  }
+}
+
+Table genres {
+  genre_id   int [pk, increment]
+  genre_name varchar(40) [not null, unique]
+}
+
+Table content_genres {
+  content_id int [ref: > content.content_id]
+  genre_id   int [ref: > genres.genre_id]
+
+  indexes {
+    (content_id, genre_id) [pk]
+  }
+}
+
+Table people {
+  person_id            int [pk, increment]
+  full_name            varchar(100) [not null]
+  birth_date           date
+  nationality_country_id int [ref: > countries.country_id]
+}
+
+Table content_cast {
+  content_id     int [ref: > content.content_id]
+  person_id      int [ref: > people.person_id]
+  cast_role      varchar(15) [note: "Actor / Director / Writer / Producer"]
+  character_name varchar(80)
+
+  indexes {
+    (content_id, person_id, cast_role) [pk]
+  }
+}
+
+Table watchlist {
+  profile_id int [ref: > profiles.profile_id]
+  content_id int [ref: > content.content_id]
+  added_date datetime [not null]
+
+  indexes {
+    (profile_id, content_id) [pk]
+  }
+}
+
+Table favorites {
+  profile_id int [ref: > profiles.profile_id]
+  content_id int [ref: > content.content_id]
+  added_date datetime [not null]
+
+  indexes {
+    (profile_id, content_id) [pk]
+  }
+}
+
+Table watch_history {
+  history_id       int [pk, increment]
+  profile_id       int [not null, ref: > profiles.profile_id]
+  content_id       int [not null, ref: > content.content_id]
+  episode_id       int [ref: > episodes.episode_id, note: "Diziler için bölüm, filmler için NULL"]
+  watched_at       datetime [not null]
+  progress_percent int [not null, note: "0-100"]
+  is_completed     boolean [not null]
+}
+
+Table reviews {
+  review_id   int [pk, increment]
+  profile_id  int [not null, ref: > profiles.profile_id]
+  content_id  int [not null, ref: > content.content_id]
+  rating      int [not null, note: "1-10"]
+  comment     text
+  review_date datetime [not null]
+
+  indexes {
+    (profile_id, content_id) [unique]
+  }
+}
+
+Table devices {
+  device_id   int [pk, increment]
+  user_id     int [not null, ref: > users.user_id]
+  device_type varchar(20) [not null, note: "TV / Phone / Tablet / Laptop"]
+  device_name varchar(60)
+  last_login  datetime
+}
+
+Table subtitles {
+  subtitle_id int [pk, increment]
+  content_id  int [not null, ref: > content.content_id]
+  language_id int [not null, ref: > languages.language_id]
+
+  indexes {
+    (content_id, language_id) [unique]
+  }
+}
