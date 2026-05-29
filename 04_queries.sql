@@ -10,11 +10,10 @@ FROM content
 WHERE content_type = 'Movie'
 ORDER BY imdb_rating DESC;
 
--- Q: Active users based in Turkey (name and email).
-SELECT u.first_name, u.last_name, u.email
-FROM users u
-JOIN countries c ON u.country_id = c.country_id
-WHERE c.country_name = 'Turkey' AND u.account_status = 'Active';
+-- Q: Active users based in Turkey.
+SELECT first_name, last_name, email
+FROM users
+WHERE country = 'Turkey' AND account_status = 'Active';
 
 -- Q: Content released after 2015, ordered by year.
 SELECT title, content_type, release_year
@@ -28,7 +27,7 @@ FROM subscription_plans
 WHERE max_screens >= 4;
 
 -- Q: All reviews with a score of 9 or higher, newest first.
-SELECT profile_id, content_id, rating, comment, review_date
+SELECT user_id, content_id, rating, comment, review_date
 FROM reviews
 WHERE rating >= 9
 ORDER BY review_date DESC;
@@ -54,16 +53,15 @@ GROUP BY g.genre_id, g.genre_name
 HAVING COUNT(cg.content_id) > 1
 ORDER BY title_count DESC;
 
--- Q: Total successful payment amount per user and plan.
-SELECT u.first_name, u.last_name, p.plan_name,
-       SUM(pay.amount) AS total_paid
-FROM users u
-JOIN subscriptions s      ON u.user_id = s.user_id
-JOIN subscription_plans p ON s.plan_id = p.plan_id
-JOIN payments pay         ON s.subscription_id = pay.subscription_id
-WHERE pay.payment_status = 'Success'
-GROUP BY u.user_id, u.first_name, u.last_name, p.plan_name
-ORDER BY total_paid DESC;
+-- Q: Monthly revenue per plan from active subscriptions.
+SELECT p.plan_name,
+       COUNT(s.subscription_id) AS active_subs,
+       SUM(p.monthly_price)     AS monthly_revenue
+FROM subscription_plans p
+JOIN subscriptions s ON p.plan_id = s.plan_id
+WHERE s.status = 'Active'
+GROUP BY p.plan_id, p.plan_name
+ORDER BY monthly_revenue DESC;
 
 -- Q: Titles rated above the overall average IMDb rating.
 SELECT title, content_type, imdb_rating
@@ -81,7 +79,7 @@ ORDER BY c.title;
 
 -- Q: Top 5 most-favorited titles.
 SELECT c.title,
-       COUNT(f.profile_id) AS favorite_count
+       COUNT(f.user_id) AS favorite_count
 FROM content c
 JOIN favorites f ON c.content_id = f.content_id
 GROUP BY c.content_id, c.title

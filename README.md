@@ -1,13 +1,13 @@
 # STREAMFLIX - Database Project
 
-Movie & series streaming platform database. 22 tables (3NF), 426 sample rows.
+Movie & series streaming platform database. 11 tables (3NF), ~228 sample rows.
 
 ## Files
 | File | What it is |
 |------|------------|
 | `schema.dbml` | E-R diagram source (for dbdiagram.io) |
 | `01_create_tables.sql` | All tables (PK, FK, UNIQUE, NOT NULL, CHECK) |
-| `02_sample_data.sql` | 426 sample rows |
+| `02_sample_data.sql` | ~228 sample rows |
 | `03_dml_operations.sql` | 14 DML statements (INSERT / UPDATE / DELETE) |
 | `04_queries.sql` | 5 simple + 7 complex queries |
 | `online_full.sql` | Same schema + data as one file for online SQL tools |
@@ -32,4 +32,4 @@ into the left "Schema SQL" box, write a query in the right box, and click Run.
 
 ## Testing
 All SQL files were run on a real MySQL 8.4 server with foreign key checks on
-(schema + 426 rows + 14 DML + 12 queries), with no errors.
+(schema + ~228 rows + 14 DML + 12 queries), with no errors.
