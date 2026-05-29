@@ -1,6 +1,6 @@
 # STREAMFLIX — Dizi & Film İzleme Platformu Veritabanı Sistemi
 **Veritabanı Sistemleri Dönem Projesi**
-Grup Üyeleri: [Ad Soyad 1], [Ad Soyad 2] · Tarih: [__/__/2026]
+Grup Üyeleri: Göktuğ Karaca, Defne Kaya · Tarih: 29/05/2026
 
 ---
 
