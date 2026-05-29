@@ -1,106 +1,90 @@
-# STREAMFLIX — Dizi & Film İzleme Platformu Veritabanı Sistemi
-**Veritabanı Sistemleri Dönem Projesi**
-Grup Üyeleri: Göktuğ Karaca, Defne Kaya · Tarih: 29/05/2026
+# STREAMFLIX - Movie & Series Streaming Platform Database
+**Database Management Systems (COMP2004) - Term Project**
+Team: Goktug Karaca, Defne Kaya · Date: 29 May 2026
 
 ---
 
-## 1. Sistem Tanımı ve Fonksiyonel Gereksinimler
+## 1. System and Requirements
 
-**STREAMFLIX**, kullanıcıların film ve dizi izleyebildiği, kişisel hesaplarıyla
-giriş yaparak içerikleri izleme listesine ekleyebildiği, favorileyebildiği,
-puanlayıp yorum yapabildiği bir dijital içerik yayın (streaming) platformudur.
-Netflix benzeri bir sistemin veri katmanını modeller; **web/mobil arayüz
-kapsam dışıdır**, odak noktası ilişkisel veritabanı tasarımıdır.
+STREAMFLIX is the database for a movie and series streaming service like Netflix.
+Users sign up with their own details, log in, and watch films and series. They can
+add titles to a watchlist, mark favorites, keep a watch history, and rate or review
+what they watch. We only built the database layer; there is no web or mobile app.
 
-**Fonksiyonel gereksinimler:**
-- Kullanıcılar kişisel bilgileriyle (e-posta, ad, ülke, doğum tarihi) kayıt olur.
-- Bir hesap altında birden fazla **profil** (ör. yetişkin / çocuk) bulunabilir.
-- Kullanıcılar üç **abonelik planından** (Basic / Standard / Premium) birine
-  abone olur ve aylık **ödeme** yapar.
-- İçerikler **film** veya **dizi** olabilir; diziler **sezon** ve **bölüm**lere ayrılır.
-- Her içeriğin birden çok **türü** (Action, Drama…) ve **oyuncu/yönetmen** kadrosu vardır.
-- Profiller içeriği **izleme listesine** ve **favorilere** ekler, **izleme geçmişi**
-  tutulur, içeriklere **puan + yorum** yazar.
-- İçeriklerin **altyazı** dilleri ve kullanıcıların **cihazları** kaydedilir.
+Main requirements:
+- Users register with personal info (email, name, country, birth date) and log in.
+- An account can hold several profiles, including a kids profile.
+- Users pick one of three plans (Basic, Standard, Premium) and pay monthly.
+- Content is either a movie or a series; series have seasons and episodes.
+- Each title has one or more genres and a cast of actors and directors.
+- Profiles keep a watchlist, favorites, watch history, and reviews with a rating.
+- We also store subtitle languages per title and the devices each user signs in from.
 
-## 2. Mantıksal Tasarım (E-R Diyagramı)
+## 2. Logical Design (E-R Model)
 
-Sistem **22 normalize tablo** içerir (3NF). Tüm tablo, anahtar, kardinalite ve
-ilişkiler `schema.dbml` dosyasında tanımlıdır ve **dbdiagram.io** üzerinde
-görsel E-R diyagramı olarak üretilir.
+The system has 22 tables. All tables, keys, and relationships are defined in
+`schema.dbml` and drawn as an E-R diagram on dbdiagram.io. Main relationships:
 
-**Başlıca varlıklar ve ilişkiler:**
+| Relationship | Cardinality | Note |
+|--------------|-------------|------|
+| users - profiles | 1 : N | One account, many profiles |
+| users - subscriptions - payments | 1 : N : N | Subscription and payment chain |
+| content - movies / series | 1 : 1 | Supertype / subtype split |
+| series - seasons - episodes | 1 : N : N | Series hierarchy |
+| content - genres | N : M | via content_genres |
+| content - people | N : M | via content_cast (with role) |
+| profiles - content | N : M | via watchlist, favorites, reviews |
 
-| İlişki | Kardinalite | Açıklama |
-|--------|-------------|----------|
-| users — profiles | 1 : N | Bir hesap birçok profile sahip |
-| users — subscriptions — payments | 1 : N : N | Abonelik ve ödeme zinciri |
-| content — movies / series | 1 : 1 | Üst tip / alt tip (ISA) ayrımı |
-| series — seasons — episodes | 1 : N : N | Dizi hiyerarşisi |
-| content — genres | N : M | `content_genres` ara tablosu |
-| content — people | N : M | `content_cast` ara tablosu (+rol) |
-| profiles — content | N : M | watchlist, favorites, reviews ara tabloları |
+### 2.1. Normalization (1NF to 3NF)
 
-### 2.1. Normalizasyon Analizi (1NF → 2NF → 3NF)
+To show the design avoids redundancy, here is how a single flat table would be
+broken down. Start with one wide table:
 
-Naif bir "tek tablo" tasarımının normalize edilmesiyle veri tekrarı ve anomalilerin
-giderildiği gösterilir. Örnek evrensel tablo:
+> *Watch(user_email, user_name, country_name, country_code, plan_name, plan_price,
+> title, genres, director, rating)*
 
-> *İzlemeKaydı(user_email, user_ad, ülke_adı, ülke_kodu, plan_adı, plan_ücret,
-> içerik_adı, içerik_türleri, yönetmen, puan)*
+- **Anomalies:** Insertion (cannot add a plan or title until someone uses it),
+  Update (changing a plan price means editing every matching row),
+  Deletion (removing the last view of a title loses the title itself).
+- **Functional dependencies:** `user_email -> user_name, country_name`;
+  `country_name -> country_code`; `plan_name -> plan_price`; `content_id -> title, director`.
+- **1NF:** `genres` is multi-valued, so it moves to `content_genres(content_id, genre_id)`.
+- **2NF:** partial dependencies are removed by splitting out `users`, `subscription_plans`, `content`.
+- **3NF:** transitive dependencies removed: `country_name -> country_code` to `countries`;
+  `plan_price` to `subscription_plans`; `director` to `people` + `content_cast`.
 
-- **Anomaliler:** *Ekleme* — aboneliği olmayan planı/izlenmemiş içeriği ekleyememe;
-  *Güncelleme* — plan ücreti değişince tüm satırları tek tek güncelleme zorunluluğu;
-  *Silme* — bir içeriğin son izleme kaydı silinince içerik bilgisinin de kaybolması.
-- **Fonksiyonel bağımlılıklar:** `user_email → user_ad, ülke_adı`;
-  `ülke_adı → ülke_kodu`; `plan_adı → plan_ücret`; `içerik_id → içerik_adı, yönetmen`.
-- **1NF (atomiklik):** `içerik_türleri` çok-değerli → `content_genres(content_id, genre_id)`.
-- **2NF (tam bağımlılık):** Kısmi bağımlılıklar ayrıldı → `users`, `subscription_plans`, `content`.
-- **3NF (geçişsizlik):** `user_email → ülke_adı → ülke_kodu` geçişli zinciri `countries`'e;
-  `plan_adı → plan_ücret` `subscription_plans`'e; yönetmen `people` + `content_cast`'e taşındı.
+All 22 tables end up in 3NF: every non-key column depends fully and directly on its
+primary key. Most tables are also in BCNF. The decomposition is lossless and
+dependency preserving.
 
-**Sonuç:** 22 tablonun tamamı **3NF**'dedir (her anahtar-olmayan öznitelik PK'ye tam ve
-geçişsiz bağlı). Çoğu tablo, her belirleyicinin aday anahtar olması nedeniyle **BCNF**'i de
-sağlar. Ayrışım kayıpsız (lossless) ve bağımlılık koruyucudur.
+## 3. Physical Design
 
-## 3. Fiziksel Tasarım
+`01_create_tables.sql` builds every table on MySQL 8.0. Constraints used:
 
-`01_create_tables.sql` dosyası tüm tabloları MySQL 8.0 üzerinde oluşturur.
-Uygulanan bütünlük kısıtları:
-
-- **Primary Key:** Her tabloda; ara tablolarda bileşik PK
-  (ör. `content_genres(content_id, genre_id)`).
-- **Foreign Key:** Tüm ilişkilerde; uygun yerlerde `ON DELETE CASCADE`
-  (ör. kullanıcı silinince profilleri, abonelikleri, cihazları da silinir).
+- **Primary keys** on every table; composite keys on link tables (e.g. `content_genres`).
+- **Foreign keys** on all relationships, with `ON DELETE CASCADE` where it makes sense
+  (deleting a user also removes their profiles, subscriptions and devices).
 - **UNIQUE:** `users.email`, `genres.genre_name`, `reviews(profile_id, content_id)`
-  (profil başına içerik başına tek yorum), `seasons(content_id, season_number)`.
-- **NOT NULL:** Zorunlu alanlarda (e-posta, başlık, tarih vb.).
-- **CHECK:** `rating BETWEEN 1 AND 10`, `progress_percent BETWEEN 0 AND 100`,
-  `content_type IN ('Movie','Series')`, `monthly_price >= 0`,
-  `payment_status IN ('Success','Failed','Refunded')` vb.
+  so a profile reviews a title once.
+- **NOT NULL / CHECK:** `rating BETWEEN 1 AND 10`, `progress_percent BETWEEN 0 AND 100`,
+  `content_type IN ('Movie','Series')`, `payment_status IN ('Success','Failed','Refunded')`.
 
-**Örnek veri:** `02_sample_data.sql` ile **426 kayıt** 22 tabloya dağıtılmıştır
-(15 kullanıcı, 26 profil, 20 içerik, 32 bölüm, 28 izleme geçmişi, 20 yorum…).
-Tüm veriler FK kontrolü açıkken hatasız yüklenmektedir.
+**Sample data:** `02_sample_data.sql` loads 426 rows across the 22 tables (15 users,
+26 profiles, 20 titles, 32 episodes, 28 history rows, 20 reviews, and so on). All rows
+load cleanly with foreign key checks on.
 
-## 4. SQL Uygulaması
+## 4. SQL Implementation
 
-Her ifade öncesinde anlamlı bir **iş sorusu** belirtilmiştir.
+Every statement has a short business question above it.
 
-- **`03_dml_operations.sql`** — 14 DML işlemi: 5 INSERT (yeni kayıt, abonelik,
-  profil, izleme listesi, yorum), 5 UPDATE (plan değişikliği, abonelik süresi
-  dolması, dizi durumu, izleme tamamlama, hesap aktifleştirme),
-  4 DELETE (listeden çıkarma, başarısız ödeme temizliği, hesap silme/cascade).
-- **`04_queries.sql`** — **5 basit sorgu** (filtreleme/sıralama: filmler,
-  ülkeye göre kullanıcılar, yıla göre içerik…) ve **7 karmaşık sorgu**
-  (JOIN, GROUP BY/HAVING, alt sorgu, NOT EXISTS): içerik başına ortalama puan,
-  en kalabalık türler, kullanıcı başına toplam ödeme, ortalamanın üstündeki
-  içerikler, hiç izlenmemiş içerikler, en çok favorilenen 5 içerik,
-  belirli yönetmenin içerikleri.
+- **`03_dml_operations.sql`** - 14 statements: 5 INSERT, 5 UPDATE, 4 DELETE (new signup,
+  subscription, profile, plan downgrade, expiring subscriptions, account deletion with
+  cascade, and more).
+- **`04_queries.sql`** - 5 simple queries (filtering and sorting) and 7 complex ones using
+  JOIN, GROUP BY / HAVING and subqueries: average rating per title, busiest genres, total
+  paid per user, titles above the average rating, titles never watched, top 5 favorites,
+  and titles by a given director.
 
-**Doğrulama:** Tüm dosyalar (CREATE + veri + DML + 12 sorgu) referans bütünlüğü
-kontrolü açıkken hatasız çalıştırılarak test edilmiştir.
-
----
-*Canlı demo: MySQL Workbench üzerinde dosyalar sırasıyla 01 → 02 → 03 → 04
-çalıştırılır. E-R diyagramı dbdiagram.io üzerinde `schema.dbml` ile gösterilir.*
+**Testing and demo:** All files were run on a real MySQL 8.4 server with no errors. The
+live demo runs in MySQL Workbench in order 01 to 04; the E-R diagram is shown on
+dbdiagram.io from `schema.dbml`.

@@ -1,7 +1,7 @@
 // ============================================================
-//  STREAMFLIX - Dizi & Film İzleme Platformu Veritabanı
-//  ER Şeması (dbdiagram.io için DBML formatı)
-//  Kullanım: https://dbdiagram.io -> bu dosyanın içeriğini yapıştır
+//  STREAMFLIX - movie & series streaming platform
+//  ER schema (DBML for dbdiagram.io)
+//  Usage: paste this file into https://dbdiagram.io
 // ============================================================
 
 Table countries {
@@ -167,7 +167,7 @@ Table watch_history {
   history_id       int [pk, increment]
   profile_id       int [not null, ref: > profiles.profile_id]
   content_id       int [not null, ref: > content.content_id]
-  episode_id       int [ref: > episodes.episode_id, note: "Diziler için bölüm, filmler için NULL"]
+  episode_id       int [ref: > episodes.episode_id, note: "episode for series, NULL for movies"]
   watched_at       datetime [not null]
   progress_percent int [not null, note: "0-100"]
   is_completed     boolean [not null]

@@ -1,34 +1,25 @@
--- ============================================================
---  STREAMFLIX  -  Dizi & Film Izleme Platformu
---  01 - FIZIKSEL TASARIM (CREATE TABLE)
---  MySQL 8.0+  (CHECK kisitlari icin 8.0.16+ gerekir)
--- ============================================================
+-- STREAMFLIX - movie & series streaming platform
+-- Schema (tables, keys, constraints) - MySQL 8.0+
 
 DROP DATABASE IF EXISTS streamflix;
 CREATE DATABASE streamflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE streamflix;
 
--- ------------------------------------------------------------
--- 1. countries
--- ------------------------------------------------------------
+-- Lookup: countries
 CREATE TABLE countries (
     country_id   INT AUTO_INCREMENT PRIMARY KEY,
     country_name VARCHAR(60) NOT NULL UNIQUE,
     country_code CHAR(2)     NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 2. languages
--- ------------------------------------------------------------
+-- Lookup: languages
 CREATE TABLE languages (
     language_id   INT AUTO_INCREMENT PRIMARY KEY,
     language_name VARCHAR(40) NOT NULL UNIQUE,
     language_code CHAR(2)     NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 3. users
--- ------------------------------------------------------------
+-- Accounts
 CREATE TABLE users (
     user_id        INT AUTO_INCREMENT PRIMARY KEY,
     email          VARCHAR(120) NOT NULL UNIQUE,
@@ -44,9 +35,7 @@ CREATE TABLE users (
     CONSTRAINT chk_users_status  CHECK (account_status IN ('Active','Suspended','Cancelled'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 4. profiles  (bir hesap altinda birden fazla profil)
--- ------------------------------------------------------------
+-- Multiple profiles per account
 CREATE TABLE profiles (
     profile_id            INT AUTO_INCREMENT PRIMARY KEY,
     user_id               INT NOT NULL,
@@ -58,9 +47,7 @@ CREATE TABLE profiles (
     CONSTRAINT fk_profiles_lang FOREIGN KEY (preferred_language_id) REFERENCES languages(language_id)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 5. subscription_plans
--- ------------------------------------------------------------
+-- Subscription plans
 CREATE TABLE subscription_plans (
     plan_id        INT AUTO_INCREMENT PRIMARY KEY,
     plan_name      VARCHAR(30) NOT NULL UNIQUE,
@@ -72,9 +59,6 @@ CREATE TABLE subscription_plans (
     CONSTRAINT chk_plan_screens CHECK (max_screens BETWEEN 1 AND 10)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 6. subscriptions
--- ------------------------------------------------------------
 CREATE TABLE subscriptions (
     subscription_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id         INT NOT NULL,
@@ -89,9 +73,6 @@ CREATE TABLE subscriptions (
     CONSTRAINT chk_sub_dates  CHECK (end_date IS NULL OR end_date >= start_date)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 7. payments
--- ------------------------------------------------------------
 CREATE TABLE payments (
     payment_id      INT AUTO_INCREMENT PRIMARY KEY,
     subscription_id INT NOT NULL,
@@ -105,9 +86,7 @@ CREATE TABLE payments (
     CONSTRAINT chk_pay_status CHECK (payment_status IN ('Success','Failed','Refunded'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 8. content  (filmler + diziler ortak ust tablo)
--- ------------------------------------------------------------
+-- Shared parent for movies and series
 CREATE TABLE content (
     content_id           INT AUTO_INCREMENT PRIMARY KEY,
     title                VARCHAR(150) NOT NULL,
@@ -125,9 +104,7 @@ CREATE TABLE content (
     CONSTRAINT chk_content_mat  CHECK (maturity_rating IN ('G','PG','PG-13','R','TV-PG','TV-14','TV-MA'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 9. movies  (content ile 1:1 alt tip)
--- ------------------------------------------------------------
+-- Movie subtype (1:1 with content)
 CREATE TABLE movies (
     content_id       INT PRIMARY KEY,
     duration_minutes INT NOT NULL,
@@ -135,9 +112,7 @@ CREATE TABLE movies (
     CONSTRAINT chk_movie_duration CHECK (duration_minutes > 0)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 10. series  (content ile 1:1 alt tip)
--- ------------------------------------------------------------
+-- Series subtype (1:1 with content)
 CREATE TABLE series (
     content_id    INT PRIMARY KEY,
     series_status VARCHAR(10) NOT NULL,
@@ -145,9 +120,6 @@ CREATE TABLE series (
     CONSTRAINT chk_series_status CHECK (series_status IN ('Ongoing','Ended'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 11. seasons
--- ------------------------------------------------------------
 CREATE TABLE seasons (
     season_id     INT AUTO_INCREMENT PRIMARY KEY,
     content_id    INT NOT NULL,
@@ -158,9 +130,6 @@ CREATE TABLE seasons (
     CONSTRAINT chk_season_no CHECK (season_number > 0)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 12. episodes
--- ------------------------------------------------------------
 CREATE TABLE episodes (
     episode_id       INT AUTO_INCREMENT PRIMARY KEY,
     season_id        INT NOT NULL,
@@ -172,17 +141,12 @@ CREATE TABLE episodes (
     CONSTRAINT chk_ep_duration CHECK (duration_minutes > 0)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 13. genres
--- ------------------------------------------------------------
 CREATE TABLE genres (
     genre_id   INT AUTO_INCREMENT PRIMARY KEY,
     genre_name VARCHAR(40) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 14. content_genres  (M:N)
--- ------------------------------------------------------------
+-- content <-> genre (many-to-many)
 CREATE TABLE content_genres (
     content_id INT NOT NULL,
     genre_id   INT NOT NULL,
@@ -191,9 +155,6 @@ CREATE TABLE content_genres (
     CONSTRAINT fk_cg_genre   FOREIGN KEY (genre_id)   REFERENCES genres(genre_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 15. people
--- ------------------------------------------------------------
 CREATE TABLE people (
     person_id              INT AUTO_INCREMENT PRIMARY KEY,
     full_name              VARCHAR(100) NOT NULL,
@@ -202,9 +163,7 @@ CREATE TABLE people (
     CONSTRAINT fk_people_country FOREIGN KEY (nationality_country_id) REFERENCES countries(country_id)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 16. content_cast  (M:N + rol)
--- ------------------------------------------------------------
+-- content <-> person with role (many-to-many)
 CREATE TABLE content_cast (
     content_id     INT NOT NULL,
     person_id      INT NOT NULL,
@@ -216,9 +175,6 @@ CREATE TABLE content_cast (
     CONSTRAINT chk_cast_role   CHECK (cast_role IN ('Actor','Director','Writer','Producer'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 17. watchlist  (izleme listesi)
--- ------------------------------------------------------------
 CREATE TABLE watchlist (
     profile_id INT NOT NULL,
     content_id INT NOT NULL,
@@ -228,9 +184,6 @@ CREATE TABLE watchlist (
     CONSTRAINT fk_wl_content FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 18. favorites  (favoriler)
--- ------------------------------------------------------------
 CREATE TABLE favorites (
     profile_id INT NOT NULL,
     content_id INT NOT NULL,
@@ -240,9 +193,6 @@ CREATE TABLE favorites (
     CONSTRAINT fk_fav_content FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 19. watch_history  (izleme gecmisi)
--- ------------------------------------------------------------
 CREATE TABLE watch_history (
     history_id       INT AUTO_INCREMENT PRIMARY KEY,
     profile_id       INT NOT NULL,
@@ -257,9 +207,7 @@ CREATE TABLE watch_history (
     CONSTRAINT chk_wh_progress CHECK (progress_percent BETWEEN 0 AND 100)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 20. reviews  (yorum + puan)
--- ------------------------------------------------------------
+-- One review per profile per content
 CREATE TABLE reviews (
     review_id   INT AUTO_INCREMENT PRIMARY KEY,
     profile_id  INT NOT NULL,
@@ -273,9 +221,6 @@ CREATE TABLE reviews (
     CONSTRAINT chk_rev_rating CHECK (rating BETWEEN 1 AND 10)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 21. devices
--- ------------------------------------------------------------
 CREATE TABLE devices (
     device_id   INT AUTO_INCREMENT PRIMARY KEY,
     user_id     INT NOT NULL,
@@ -286,9 +231,7 @@ CREATE TABLE devices (
     CONSTRAINT chk_dev_type CHECK (device_type IN ('TV','Phone','Tablet','Laptop','Desktop'))
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
--- 22. subtitles
--- ------------------------------------------------------------
+-- Available subtitle languages per content
 CREATE TABLE subtitles (
     subtitle_id INT AUTO_INCREMENT PRIMARY KEY,
     content_id  INT NOT NULL,

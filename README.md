@@ -1,31 +1,35 @@
-# STREAMFLIX — Veritabanı Projesi · Kullanım Kılavuzu
+# STREAMFLIX - Database Project
 
-Dizi & film izleme platformu veritabanı. 22 tablo (3NF), 426+ örnek kayıt.
+Movie & series streaming platform database. 22 tables (3NF), 426 sample rows.
 
-## Dosyalar
-| Dosya | İçerik |
-|-------|--------|
-| `schema.dbml` | E-R diyagramı (dbdiagram.io için) |
-| `01_create_tables.sql` | Tüm tablolar (PK, FK, UNIQUE, NOT NULL, CHECK) |
-| `02_sample_data.sql` | 426 örnek kayıt |
-| `03_dml_operations.sql` | 14 DML işlemi (INSERT/UPDATE/DELETE) |
-| `04_queries.sql` | 5 basit + 7 karmaşık sorgu |
-| `report.md` | 4 sayfalık proje raporu (PDF'e çevrilecek) |
+## Files
+| File | What it is |
+|------|------------|
+| `schema.dbml` | E-R diagram source (for dbdiagram.io) |
+| `01_create_tables.sql` | All tables (PK, FK, UNIQUE, NOT NULL, CHECK) |
+| `02_sample_data.sql` | 426 sample rows |
+| `03_dml_operations.sql` | 14 DML statements (INSERT / UPDATE / DELETE) |
+| `04_queries.sql` | 5 simple + 7 complex queries |
+| `online_full.sql` | Same schema + data as one file for online SQL tools |
+| `report.pdf` / `report.docx` | 2-page project report |
 
-## 1) E-R diyagramını oluşturma (dbdiagram.io)
-1. https://dbdiagram.io adresine git (ücretsiz, kayıt gerekmez).
-2. `schema.dbml` dosyasının içeriğini sol panele yapıştır.
-3. Sağda otomatik E-R diyagramı çizilir. **Export → PNG/PDF** ile raporа ekle.
+## 1) E-R diagram (dbdiagram.io)
+1. Open https://dbdiagram.io and click "Go to App".
+2. Clear the editor and paste the contents of `schema.dbml`.
+3. The diagram is drawn automatically. Use Export to save as PNG/PDF.
 
-## 2) Veritabanını kurma (MySQL Workbench — canlı demo)
-1. MySQL Workbench'i aç, bir bağlantı oluştur.
-2. Dosyaları **sırasıyla** aç ve çalıştır (yıldırım ikonu):
-   `01_create_tables.sql` → `02_sample_data.sql` → `03_dml_operations.sql` → `04_queries.sql`
-3. Sorgu sonuçları alt panelde görünür. Demo için `04_queries.sql` idealdir.
+## 2) Run the database (MySQL Workbench)
+1. Open MySQL Workbench and connect to your server.
+2. Open and run the files in order:
+   `01_create_tables.sql` -> `02_sample_data.sql` -> `03_dml_operations.sql` -> `04_queries.sql`
+3. Results show in the bottom panel.
 
-> Not: CHECK kısıtları için **MySQL 8.0.16+** gerekir. SQLite kullanmak isterseniz
-> küçük sözdizimi farkları olur (AUTO_INCREMENT → AUTOINCREMENT vb.).
+> CHECK constraints need MySQL 8.0.16+.
 
-## Doğrulama
-Tüm SQL dosyaları, foreign key kontrolü açıkken hatasız çalıştırılarak test edildi
-(CREATE + 426 kayıt + 14 DML + 12 sorgu).
+## 3) Run online (no install)
+Open https://www.db-fiddle.com, set the engine to MySQL 8.0, paste `online_full.sql`
+into the left "Schema SQL" box, write a query in the right box, and click Run.
+
+## Testing
+All SQL files were run on a real MySQL 8.4 server with foreign key checks on
+(schema + 426 rows + 14 DML + 12 queries), with no errors.
