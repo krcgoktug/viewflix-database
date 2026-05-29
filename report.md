@@ -41,9 +41,27 @@ görsel E-R diyagramı olarak üretilir.
 | content — people | N : M | `content_cast` ara tablosu (+rol) |
 | profiles — content | N : M | watchlist, favorites, reviews ara tabloları |
 
-**Normalizasyon notu (3NF):** Tekrar eden ülke/dil/tür/kişi bilgileri ayrı
-referans tablolarına çıkarılmıştır; hiçbir tabloda kısmi veya geçişli bağımlılık
-yoktur. Çoka-çok ilişkiler bileşik birincil anahtarlı ara tablolarla çözülmüştür.
+### 2.1. Normalizasyon Analizi (1NF → 2NF → 3NF)
+
+Naif bir "tek tablo" tasarımının normalize edilmesiyle veri tekrarı ve anomalilerin
+giderildiği gösterilir. Örnek evrensel tablo:
+
+> *İzlemeKaydı(user_email, user_ad, ülke_adı, ülke_kodu, plan_adı, plan_ücret,
+> içerik_adı, içerik_türleri, yönetmen, puan)*
+
+- **Anomaliler:** *Ekleme* — aboneliği olmayan planı/izlenmemiş içeriği ekleyememe;
+  *Güncelleme* — plan ücreti değişince tüm satırları tek tek güncelleme zorunluluğu;
+  *Silme* — bir içeriğin son izleme kaydı silinince içerik bilgisinin de kaybolması.
+- **Fonksiyonel bağımlılıklar:** `user_email → user_ad, ülke_adı`;
+  `ülke_adı → ülke_kodu`; `plan_adı → plan_ücret`; `içerik_id → içerik_adı, yönetmen`.
+- **1NF (atomiklik):** `içerik_türleri` çok-değerli → `content_genres(content_id, genre_id)`.
+- **2NF (tam bağımlılık):** Kısmi bağımlılıklar ayrıldı → `users`, `subscription_plans`, `content`.
+- **3NF (geçişsizlik):** `user_email → ülke_adı → ülke_kodu` geçişli zinciri `countries`'e;
+  `plan_adı → plan_ücret` `subscription_plans`'e; yönetmen `people` + `content_cast`'e taşındı.
+
+**Sonuç:** 22 tablonun tamamı **3NF**'dedir (her anahtar-olmayan öznitelik PK'ye tam ve
+geçişsiz bağlı). Çoğu tablo, her belirleyicinin aday anahtar olması nedeniyle **BCNF**'i de
+sağlar. Ayrışım kayıpsız (lossless) ve bağımlılık koruyucudur.
 
 ## 3. Fiziksel Tasarım
 
