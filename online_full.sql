@@ -1,7 +1,7 @@
--- STREAMFLIX - combined SQL for online tools (db-fiddle.com, sqliteonline.com)
+-- VIEWFLIX - combined SQL for online tools (db-fiddle.com, sqliteonline.com)
 -- CREATE DATABASE / USE lines removed. Tables first, then data.
 
--- STREAMFLIX - movie & series streaming platform
+-- VIEWFLIX - movie & series streaming platform
 -- Schema (11 tables, 3NF) - MySQL 8.0+
 
 
@@ -135,7 +135,7 @@ CREATE TABLE favorites (
     CONSTRAINT fk_fav_content FOREIGN KEY (content_id) REFERENCES content(content_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- STREAMFLIX - sample data (about 230 rows across 11 tables)
+-- VIEWFLIX - sample data (about 230 rows across 11 tables)
 -- Run order: 01_create_tables.sql then this file
 
 -- users (15)

@@ -1,6 +1,6 @@
-# STREAMFLIX - Live Demo Guide
+# VIEWFLIX - Live Demo Guide
 
-MySQL Server 8.4 is installed and the STREAMFLIX database is loaded (11 tables, ~228 rows).
+MySQL Server 8.4 is installed and the VIEWFLIX database is loaded (11 tables, ~228 rows).
 
 ## Connection
 | Setting | Value |
@@ -8,8 +8,8 @@ MySQL Server 8.4 is installed and the STREAMFLIX database is loaded (11 tables, 
 | Host | `localhost` (127.0.0.1) |
 | Port | `3306` |
 | User | `root` |
-| Password | `Streamflix2026` |
-| Database | `streamflix` |
+| Password | `Viewflix2026` |
+| Database | `viewflix` |
 
 ## Before the demo
 1. Double-click `start_mysql.bat` to start the server (do this after any reboot).
@@ -28,7 +28,7 @@ To run SQL: select it and click the lightning icon. Results show in the bottom p
 Type and run this during the demo:
 
 ```sql
-USE streamflix;
+USE viewflix;
 
 -- current users
 SELECT user_id, first_name, last_name, email FROM users ORDER BY user_id DESC LIMIT 5;
@@ -58,7 +58,7 @@ split into a clean 3NF design.
 
 ## E-R diagram
 Open https://dbdiagram.io, paste `schema.dbml`, then Export to PNG/PDF.
-Or in Workbench: Database -> Reverse Engineer (Ctrl+R) -> pick `streamflix` to get an EER diagram of the live database.
+Or in Workbench: Database -> Reverse Engineer (Ctrl+R) -> pick `viewflix` to get an EER diagram of the live database.
 
 ## Troubleshooting
 - Workbench can't connect: make sure `start_mysql.bat` is running.

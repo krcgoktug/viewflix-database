@@ -1,4 +1,4 @@
-# STREAMFLIX - Database Project
+# VIEWFLIX - Database Project
 
 Movie & series streaming platform database. 11 tables (3NF), ~228 sample rows.
 

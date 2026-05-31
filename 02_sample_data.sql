@@ -1,6 +1,6 @@
--- STREAMFLIX - sample data (about 230 rows across 11 tables)
+-- VIEWFLIX - sample data (about 230 rows across 11 tables)
 -- Run order: 01_create_tables.sql then this file
-USE streamflix;
+USE viewflix;
 
 -- users (15)
 INSERT INTO users (user_id, email, password_hash, first_name, last_name, birth_date, country, phone, created_at, account_status) VALUES

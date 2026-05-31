@@ -1,6 +1,6 @@
--- STREAMFLIX - DML (INSERT / UPDATE / DELETE)
+-- VIEWFLIX - DML (INSERT / UPDATE / DELETE)
 -- Each statement has a short business question above it.
-USE streamflix;
+USE viewflix;
 
 -- Q: A new user signs up. Add the account.
 INSERT INTO users (email, password_hash, first_name, last_name, birth_date, country, phone, created_at, account_status)

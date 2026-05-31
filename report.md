@@ -1,4 +1,4 @@
-# STREAMFLIX - Movie & Series Streaming Platform Database
+# VIEWFLIX - Movie & Series Streaming Platform Database
 **Database Management Systems (COMP2004) - Term Project**
 Team: Goktug Karaca, Defne Kaya · Date: 29 May 2026
 
@@ -6,7 +6,7 @@ Team: Goktug Karaca, Defne Kaya · Date: 29 May 2026
 
 ## 1. System and Requirements
 
-STREAMFLIX is the database for a movie and series streaming service like Netflix.
+VIEWFLIX is the database for a movie and series streaming service like Netflix.
 Users sign up with their own details, log in, and watch films and series. They can
 mark favorites, keep a watch history, and rate or review titles. We only built the
 database layer; there is no web or mobile app.

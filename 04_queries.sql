@@ -1,6 +1,6 @@
--- STREAMFLIX - Queries
+-- VIEWFLIX - Queries
 -- 5 simple + 7 complex queries. Each has a business question above it.
-USE streamflix;
+USE viewflix;
 
 -- ===== Simple queries =====
 

@@ -1,9 +1,9 @@
--- STREAMFLIX - movie & series streaming platform
+-- VIEWFLIX - movie & series streaming platform
 -- Schema (11 tables, 3NF) - MySQL 8.0+
 
-DROP DATABASE IF EXISTS streamflix;
-CREATE DATABASE streamflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE streamflix;
+DROP DATABASE IF EXISTS viewflix;
+CREATE DATABASE viewflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE viewflix;
 
 -- Accounts
 CREATE TABLE users (

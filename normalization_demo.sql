@@ -1,4 +1,4 @@
--- STREAMFLIX - Normalization demo (1NF -> 3NF)
+-- VIEWFLIX - Normalization demo (1NF -> 3NF)
 -- Shows how one flat, redundant table is split into a clean 3NF design.
 -- Run in MySQL Workbench (all at once), or in db-fiddle:
 --   put the CREATE/INSERT parts in "Schema SQL", the SELECTs in "Query SQL".
