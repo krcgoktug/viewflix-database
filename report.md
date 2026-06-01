@@ -76,10 +76,11 @@ Every statement has a short business question above it.
 - **`03_dml_operations.sql`** - 14 statements: 5 INSERT, 5 UPDATE, 4 DELETE (new signup,
   subscription, favorite, review, plan downgrade, expiring subscriptions, account deletion
   with cascade, and more).
-- **`04_queries.sql`** - 5 simple queries (filtering and sorting) and 7 complex ones using
-  JOIN, GROUP BY / HAVING and subqueries: average rating per title, busiest genres, monthly
-  revenue per plan, titles above the average rating, titles never watched, top 5 favorites,
-  and titles by a given director.
+- **`04_queries.sql`** - 15 queries in three groups: 5 simple (filtering and sorting),
+  5 complex (JOIN and subquery, e.g. titles above the average rating, titles never watched,
+  reviews joined to users and titles, a director's filmography), and 5 aggregation
+  (GROUP BY / HAVING, e.g. average rating per title, busiest genres, monthly revenue per plan,
+  top 5 favorites).
 
 **Testing and demo:** All files were run on a real MySQL 8.4 server with no errors. The
 live demo runs in MySQL Workbench in order 01 to 04; the E-R diagram is shown on

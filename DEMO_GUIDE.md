@@ -19,7 +19,7 @@ MySQL Server 8.4 is installed and the VIEWFLIX database is loaded (11 tables, ~2
 ## Demo flow (run in order in Workbench)
 1. `01_create_tables.sql` - the tables.
 2. `02_sample_data.sql` - sample rows.
-3. `04_queries.sql` - 5 simple + 7 complex queries.
+3. `04_queries.sql` - 5 simple + 5 complex + 5 aggregation queries.
 4. `03_dml_operations.sql` - INSERT / UPDATE / DELETE examples.
 
 To run SQL: select it and click the lightning icon. Results show in the bottom panel.

@@ -9,7 +9,7 @@ Movie & series streaming platform database. 11 tables (3NF), ~228 sample rows.
 | `01_create_tables.sql` | All tables (PK, FK, UNIQUE, NOT NULL, CHECK) |
 | `02_sample_data.sql` | ~228 sample rows |
 | `03_dml_operations.sql` | 14 DML statements (INSERT / UPDATE / DELETE) |
-| `04_queries.sql` | 5 simple + 7 complex queries |
+| `04_queries.sql` | 5 simple + 5 complex + 5 aggregation queries |
 | `online_full.sql` | Same schema + data as one file for online SQL tools |
 | `report.pdf` / `report.docx` | 2-page project report |
 
