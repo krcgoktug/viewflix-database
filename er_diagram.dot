@@ -1,0 +1,89 @@
+graph VIEWFLIX_ERD {
+  graph [splines=true, overlap=false, sep="+12", fontname="Helvetica", label="VIEWFLIX - Entity Relationship Diagram (Chen Notation)", labelloc="t", fontsize=20];
+  node  [fontname="Helvetica", fontsize=11];
+  edge  [dir=none, color="#444444"];
+
+  // ---------- Entities (rectangles) ----------
+  node [shape=box, style="filled,bold", fillcolor="#cfe2f3", penwidth=1.6];
+  User; Content; Genre; Person; SubscriptionPlan [label="Subscription\nPlan"];
+
+  // ---------- Relationships (diamonds) ----------
+  node [shape=diamond, style=filled, fillcolor="#fff2cc", penwidth=1.2];
+  R_sub  [label="Subscribes"];
+  R_gen  [label="Has\nGenre"];
+  R_cast [label="Cast\nIn"];
+  R_watch[label="Watches"];
+  R_rev  [label="Reviews"];
+  R_fav  [label="Favorites"];
+
+  // ---------- Attributes (ellipses; PK underlined) ----------
+  node [shape=ellipse, style=filled, fillcolor="#d9ead3", penwidth=1.0];
+
+  // User attributes
+  u_id   [label=<<U>user_id</U>>];
+  u_mail [label="email"];
+  u_name [label="name"];
+  u_ctry [label="country"];
+  u_stat [label="account_status"];
+
+  // Content attributes
+  c_id   [label=<<U>content_id</U>>];
+  c_ttl  [label="title"];
+  c_type [label="content_type"];
+  c_year [label="release_year"];
+  c_imdb [label="imdb_rating"];
+
+  // Genre attributes
+  g_id   [label=<<U>genre_id</U>>];
+  g_name [label="genre_name"];
+
+  // Person attributes
+  p_id   [label=<<U>person_id</U>>];
+  p_name [label="full_name"];
+  p_nat  [label="nationality"];
+
+  // Plan attributes
+  pl_id   [label=<<U>plan_id</U>>];
+  pl_name [label="plan_name"];
+  pl_prc  [label="monthly_price"];
+  pl_scr  [label="max_screens"];
+
+  // Relationship attributes
+  sub_st  [label="start_date"];
+  sub_pay [label="payment_status"];
+  cc_role [label="cast_role"];
+  w_prog  [label="progress_percent"];
+  rv_rt   [label="rating"];
+
+  // ---------- entity -> attribute edges ----------
+  User -- {u_id u_mail u_name u_ctry u_stat};
+  Content -- {c_id c_ttl c_type c_year c_imdb};
+  Genre -- {g_id g_name};
+  Person -- {p_id p_name p_nat};
+  SubscriptionPlan -- {pl_id pl_name pl_prc pl_scr};
+
+  // ---------- relationship attribute edges ----------
+  R_sub  -- {sub_st sub_pay};
+  R_cast -- cc_role;
+  R_watch-- w_prog;
+  R_rev  -- rv_rt;
+
+  // ---------- entity -- relationship -- entity (with cardinality) ----------
+  User -- R_sub   [label="N"];
+  R_sub -- SubscriptionPlan [label="1"];
+
+  Content -- R_gen [label="M"];
+  R_gen -- Genre    [label="N"];
+
+  Person -- R_cast [label="M"];
+  R_cast -- Content [label="N"];
+
+  User -- R_watch  [label="M"];
+  R_watch -- Content [label="N"];
+
+  User -- R_rev    [label="M"];
+  R_rev -- Content  [label="N"];
+
+  User -- R_fav    [label="M"];
+  R_fav -- Content  [label="N"];
+}
