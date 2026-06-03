@@ -1,14 +1,15 @@
 graph VIEWFLIX_ERD {
-  graph [splines=true, overlap=false, sep="+12", fontname="Helvetica", label="VIEWFLIX - Entity Relationship Diagram (Chen Notation)", labelloc="t", fontsize=20];
-  node  [fontname="Helvetica", fontsize=11];
-  edge  [dir=none, color="#444444"];
+  graph [splines=true, overlap=prism, sep="+45", fontname="Helvetica-Bold",
+         label="VIEWFLIX - Entity Relationship Diagram (Chen Notation)", labelloc="t", fontsize=30];
+  node  [fontname="Helvetica"];
+  edge  [dir=none, color="#333333", penwidth=1.4, fontname="Helvetica-Bold", fontsize=22, fontcolor="#b30000"];
 
   // ---------- Entities (rectangles) ----------
-  node [shape=box, style="filled,bold", fillcolor="#cfe2f3", penwidth=1.6];
+  node [shape=box, style="filled,bold", fillcolor="#cfe2f3", penwidth=2.2, fontsize=22, margin="0.25,0.14"];
   User; Content; Genre; Person; SubscriptionPlan [label="Subscription\nPlan"];
 
   // ---------- Relationships (diamonds) ----------
-  node [shape=diamond, style=filled, fillcolor="#fff2cc", penwidth=1.2];
+  node [shape=diamond, style=filled, fillcolor="#ffe599", penwidth=1.8, fontsize=20, margin="0.10,0.06"];
   R_sub  [label="Subscribes"];
   R_gen  [label="Has\nGenre"];
   R_cast [label="Cast\nIn"];
@@ -17,53 +18,45 @@ graph VIEWFLIX_ERD {
   R_fav  [label="Favorites"];
 
   // ---------- Attributes (ellipses; PK underlined) ----------
-  node [shape=ellipse, style=filled, fillcolor="#d9ead3", penwidth=1.0];
+  node [shape=ellipse, style=filled, fillcolor="#d9ead3", penwidth=1.4, fontsize=18, margin="0.06,0.04"];
 
-  // User attributes
   u_id   [label=<<U>user_id</U>>];
   u_mail [label="email"];
-  u_name [label="name"];
   u_ctry [label="country"];
   u_stat [label="account_status"];
 
-  // Content attributes
   c_id   [label=<<U>content_id</U>>];
   c_ttl  [label="title"];
   c_type [label="content_type"];
-  c_year [label="release_year"];
   c_imdb [label="imdb_rating"];
 
-  // Genre attributes
   g_id   [label=<<U>genre_id</U>>];
   g_name [label="genre_name"];
 
-  // Person attributes
   p_id   [label=<<U>person_id</U>>];
   p_name [label="full_name"];
   p_nat  [label="nationality"];
 
-  // Plan attributes
   pl_id   [label=<<U>plan_id</U>>];
   pl_name [label="plan_name"];
   pl_prc  [label="monthly_price"];
   pl_scr  [label="max_screens"];
 
   // Relationship attributes
-  sub_st  [label="start_date"];
   sub_pay [label="payment_status"];
   cc_role [label="cast_role"];
   w_prog  [label="progress_percent"];
   rv_rt   [label="rating"];
 
   // ---------- entity -> attribute edges ----------
-  User -- {u_id u_mail u_name u_ctry u_stat};
-  Content -- {c_id c_ttl c_type c_year c_imdb};
+  User -- {u_id u_mail u_ctry u_stat};
+  Content -- {c_id c_ttl c_type c_imdb};
   Genre -- {g_id g_name};
   Person -- {p_id p_name p_nat};
   SubscriptionPlan -- {pl_id pl_name pl_prc pl_scr};
 
   // ---------- relationship attribute edges ----------
-  R_sub  -- {sub_st sub_pay};
+  R_sub  -- sub_pay;
   R_cast -- cc_role;
   R_watch-- w_prog;
   R_rev  -- rv_rt;
