@@ -4,11 +4,12 @@
 **Split:** Goktug opens with the intro block (1-2-3). Defne does the design/ER block (4-5-6).
 From slide 7 it alternates page by page. The 2-3 and 4-5 pairs are kept together on purpose.
 Live db-fiddle queries alternate, and Goktug runs the first one.
+**Every live query below is one that is actually printed on that slide** - just run the same one.
 
-### Before you start
-- Open a **db-fiddle.com** tab (MySQL 8), paste schema+data, keep these queries ready:
-  - [G]: (1) movies by IMDb rating, (3) content above average IMDb (subquery), (5) genres with >1 title (HAVING)
-  - [D]: (2) active users in Turkey, (4) average rating per title (JOIN + GROUP BY)
+### Before you start (db-fiddle)
+- Open a **db-fiddle.com** tab (MySQL 8), paste schema+data, keep these EXACT slide queries ready:
+  - [G] - Slide 9 Q1 (active account status), Slide 11 Q1 (IMDb above average), Slide 13 Q8 (genres with >1 title)
+  - [D] - Slide 10 Q5 (movies by IMDb rating), Slide 12 Q4 (reviews with user names)
 - One laptop is fine; whoever speaks the query slide steps to it and presses Run. Speak slowly.
 
 ---
@@ -66,26 +67,61 @@ content. We also use UNIQUE on email, CHECK constraints such as rating between 1
 DELETE CASCADE so deleting a user removes their subscriptions, reviews, favorites and history."
 
 ## SLIDE 9 - Sample SQL Queries  **[G]**  -> LIVE on db-fiddle
-"We wrote fifteen queries in three groups. First, simple queries that filter and sort. Live
-example:" -> run **movies ordered by IMDb rating**: "all movies, highest rating first - just
-WHERE and ORDER BY."
+"This slide has our first simple queries - filtering, joining and grouping. Let me run the first
+one live - **Q1: which users currently have an active account status?**"
+-> run on db-fiddle:
+```
+SELECT * FROM users WHERE account_status = 'Active';
+```
+"It returns every active user. The slide also shows Q2-Q4: the ratings users gave (a join),
+favorites, and the average rating per title."
 
 ## SLIDE 10 - Sample SQL Queries (cont.)  **[D]**  -> LIVE on db-fiddle
-"Another simple one:" -> run **active users located in Turkey**: "we filter by country and
-account status."
+"More simple queries. Live - **Q5: list all movies ordered by IMDb rating:**"
+-> run on db-fiddle:
+```
+SELECT title, release_year, imdb_rating
+FROM content WHERE content_type = 'Movie' ORDER BY imdb_rating DESC;
+```
+"Highest-rated movies first. The slide also covers active users in Turkey, high reviews, recent
+content and plans with four or more screens."
 
 ## SLIDE 11 - Complex SQL Queries  **[G]**  -> LIVE on db-fiddle
-"Second group: complex queries with subqueries and joins. Live:" -> run **content with IMDb above
-the average**: "a subquery compares each title to the overall average rating."
+"Now complex queries with subqueries. Live - **Q1: which content has an IMDb rating above the
+average?**"
+-> run on db-fiddle:
+```
+SELECT title, content_type, imdb_rating FROM content
+WHERE imdb_rating > (SELECT AVG(imdb_rating) FROM content) ORDER BY imdb_rating DESC;
+```
+"The subquery computes the average, then we keep titles above it. The slide also shows content
+never watched using NOT EXISTS, and titles directed by Christopher Nolan."
 
 ## SLIDE 12 - Complex SQL Queries (cont.)  **[D]**  -> LIVE on db-fiddle
-"Another one with a join:" -> run **average rating and number of reviews per title**: "we join
-reviews to content and group by title."
+"More complex joins. Live - **Q4: all reviews with the user names and content titles:**"
+-> run on db-fiddle:
+```
+SELECT u.first_name, u.last_name, c.title, r.rating
+FROM reviews r
+JOIN users u ON r.user_id = u.user_id
+JOIN content c ON r.content_id = c.content_id
+ORDER BY r.rating DESC, c.title;
+```
+"This joins three tables. The slide also shows actors per content, titles per type, and the
+average rating per title."
 
 ## SLIDE 13 - Complex / Aggregation Queries  **[G]**  -> LIVE on db-fiddle
-"Third group: aggregation with GROUP BY and HAVING. Live:" -> run **genres linked to more than one
-title**: "HAVING filters the groups. The slides also show NOT EXISTS, a director's filmography,
-and monthly revenue per plan."
+"Finally, aggregation with GROUP BY and HAVING. Live - **Q8: which genres are associated with more
+than one content item?**"
+-> run on db-fiddle:
+```
+SELECT g.genre_name, COUNT(cg.content_id) AS title_count
+FROM genres g JOIN content_genres cg ON g.genre_id = cg.genre_id
+GROUP BY g.genre_id, g.genre_name
+HAVING COUNT(cg.content_id) > 1 ORDER BY title_count DESC;
+```
+"HAVING filters the grouped results. The slide also shows the top 5 favorites and the monthly
+revenue per subscription plan."
 
 ## SLIDE 14 - Conclusion  **[D]**
 "In conclusion, VIEWFLIX is a fully normalized relational database for a streaming platform. With
@@ -119,5 +155,6 @@ system ensures data integrity, removes redundancy and is easy to extend."
 
 ## Tips
 - Target ~10 minutes. Goktug: slides 1-3, 7, 9, 11, 13, 15. Defne: slides 4-6, 8, 10, 12, 14.
-- Have the db-fiddle tab loaded BEFORE you start; if it is slow, read the result from the slide.
+- Each live query above is copied straight from the slide it belongs to, so the screen and the
+  slide match. Have the db-fiddle tab loaded BEFORE you start; if it is slow, read the slide.
 - Hand the laptop over smoothly on the query slides (9-13).
