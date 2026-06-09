@@ -34,11 +34,10 @@ reviews. Now Defne will present the design and the ER diagram."
 # DEFNE - Design / ER block
 
 ## SLIDE 4 - ER Diagram (entities & relationships)  **[D]**
-"Thanks. To model this we identified our entities: Users, Subscription_Plans, Subscriptions,
-Content, Genres, People, Watch_History, Reviews, plus the bridge tables Content_Genres,
-Content_Cast and Favorites. Every many-to-many relationship is resolved with a bridge table - for
-example one content can have many genres and one genre many contents, so Content_Genres connects
-them."
+"Thanks. In our ER model we have five entities - Users, Subscription_Plans, Content, Genres and
+People - and six relationships between them: Subscribes, Watches, Reviews, Favorites, Has Genre
+and Cast In. Every many-to-many relationship becomes a bridge table - for example 'Has Genre'
+connects Content and Genres, because one content can have many genres and one genre many contents."
 
 ## SLIDE 5 - ER Diagram (image)  **[D]**  (explain the diagram)
 "Here is the full ER diagram in Chen notation. Rectangles are entities, ovals are attributes -
@@ -56,9 +55,11 @@ redundancy and keeps the data consistent. Now Goktug continues with the tables a
 # Alternating from here
 
 ## SLIDE 7 - Table Structure  **[G]**
-"Physically we have eleven tables. Strong entities such as Users, Content and Reviews have their
-own primary key. Associative tables such as Content_Genres, Content_Cast and Favorites use a
-composite primary key made of the foreign keys they connect."
+"Physically we have eleven tables, and they map directly to the diagram: five come from the
+entities - Users, Subscription_Plans, Content, Genres and People - and six come from the
+relationships - Subscriptions, Watch_History, Reviews, Favorites, Content_Genres and Content_Cast.
+So five entities plus six relationships gives eleven tables. Three of the relationship tables use
+a composite key of the foreign keys they connect."
 
 ## SLIDE 8 - Primary & Foreign Keys  **[D]**
 "Primary keys uniquely identify each row; foreign keys connect the tables and enforce referential
@@ -134,13 +135,12 @@ system ensures data integrity, removes redundancy and is easy to extend."
 ---
 
 ## Q&A Preparation (5 min) - share the answers, either of you can reply
-- **Why are Content_Genres, Content_Cast and Favorites associative/weak entities?**
+- **Why do the relationships become their own tables?**
+  A many-to-many relationship cannot be stored directly in a relational database, so each one
+  becomes a bridge table. Five entities plus six relationships give eleven tables.
+- **Why do Content_Genres, Content_Cast and Favorites use a composite key?**
   They have no key of their own; they are identified by the combination of the foreign keys of the
-  entities they connect (composite key), and they resolve many-to-many relationships.
-- **In the diagram a junction looks like a relationship, but in the report it is a weak entity - why?**
-  In the conceptual (Chen) diagram a pure many-to-many is drawn as a relationship; in the relational
-  schema it becomes a bridge table with a composite key, called a weak / associative entity. Both
-  describe the same thing.
+  entities they connect. Subscriptions, Watch_History and Reviews also got a surrogate primary key.
 - **Why is Subscriptions a separate table and not a column in Users?**
   It has its own attributes (plan, dates, status, payment) and key, and a user could have a
   subscription history. Keeping it separate avoids redundancy and stays in 3NF.
